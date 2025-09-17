@@ -14,7 +14,7 @@
     }
 
     h1 {
-      font-size: 32px;
+      font-size: 36px;
       margin-bottom: 30px;
       color: #333;
     }
@@ -23,33 +23,67 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 20px;
+      gap: 30px;
     }
 
     .season {
       background: white;
-      border-radius: 16px;
-      padding: 20px;
-      width: 240px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      border-radius: 20px;
+      padding: 25px;
+      width: 260px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
     .title {
       font-weight: bold;
-      font-size: 22px;
-      margin-bottom: 15px;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .circle {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 15px;
+    }
+
+    .circle svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+
+    .circle circle {
+      fill: none;
+      stroke-width: 15;
+      stroke-linecap: round;
+    }
+
+    .circle .bg {
+      stroke: #ddd;
+    }
+
+    .circle .progress {
+      stroke: #0077ff;
+      stroke-dasharray: 565;
+      stroke-dashoffset: 565;
+      transition: stroke-dashoffset 1s linear;
+    }
+
+    .circle .label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 26px;
+      font-weight: bold;
+      color: #0077ff;
     }
 
     .time span {
       display: block;
-      font-size: 22px;   /* toate mai mari */
-      font-weight: bold;
-      margin: 6px 0;
-    }
-
-    .weeks {
-      font-size: 28px;   /* săptămânile și mai mari */
-      color: #0077ff;
+      font-size: 20px;
+      margin: 5px 0;
     }
   </style>
 </head>
@@ -59,49 +93,57 @@
   <div class="seasons">
     <div class="season" id="winter">
       <div class="title">❄️ Iarna</div>
+      <div class="circle">
+        <svg>
+          <circle class="bg" cx="90" cy="90" r="90"></circle>
+          <circle class="progress" cx="90" cy="90" r="90"></circle>
+        </svg>
+        <div class="label">0</div>
+      </div>
       <div class="time">
-        <span class="weeks"></span>
         <span class="days"></span>
-        <span class="hours"></span>
-        <span class="minutes"></span>
-        <span class="seconds"></span>
-        <span class="milliseconds"></span>
       </div>
     </div>
 
     <div class="season" id="spring">
       <div class="title">🌱 Primăvara</div>
+      <div class="circle">
+        <svg>
+          <circle class="bg" cx="90" cy="90" r="90"></circle>
+          <circle class="progress" cx="90" cy="90" r="90"></circle>
+        </svg>
+        <div class="label">0</div>
+      </div>
       <div class="time">
-        <span class="weeks"></span>
         <span class="days"></span>
-        <span class="hours"></span>
-        <span class="minutes"></span>
-        <span class="seconds"></span>
-        <span class="milliseconds"></span>
       </div>
     </div>
 
     <div class="season" id="summer">
       <div class="title">☀️ Vara</div>
+      <div class="circle">
+        <svg>
+          <circle class="bg" cx="90" cy="90" r="90"></circle>
+          <circle class="progress" cx="90" cy="90" r="90"></circle>
+        </svg>
+        <div class="label">0</div>
+      </div>
       <div class="time">
-        <span class="weeks"></span>
         <span class="days"></span>
-        <span class="hours"></span>
-        <span class="minutes"></span>
-        <span class="seconds"></span>
-        <span class="milliseconds"></span>
       </div>
     </div>
 
     <div class="season" id="autumn">
       <div class="title">🍂 Toamna</div>
+      <div class="circle">
+        <svg>
+          <circle class="bg" cx="90" cy="90" r="90"></circle>
+          <circle class="progress" cx="90" cy="90" r="90"></circle>
+        </svg>
+        <div class="label">0</div>
+      </div>
       <div class="time">
-        <span class="weeks"></span>
         <span class="days"></span>
-        <span class="hours"></span>
-        <span class="minutes"></span>
-        <span class="seconds"></span>
-        <span class="milliseconds"></span>
       </div>
     </div>
   </div>
@@ -112,73 +154,39 @@
     const summerDate = new Date("Jun 1, 2026 00:00:00").getTime();
     const autumnDate = new Date("Sep 1, 2026 00:00:00").getTime();
 
-    function updateCountdown(targetDate, elements) {
+    const fullCircle = 2 * Math.PI * 90; // circumferința cercului
+
+    function updateCountdown(targetDate, container) {
       const now = new Date().getTime();
       const diff = targetDate - now;
 
       if (diff <= 0) {
-        elements.weeks.textContent = "0 săptămâni";
-        elements.days.textContent = "0 zile";
-        elements.hours.textContent = "0 ore";
-        elements.minutes.textContent = "0 minute";
-        elements.seconds.textContent = "0 secunde";
-        elements.milliseconds.textContent = "0 ms";
+        container.querySelector(".label").textContent = "0";
+        container.querySelector(".days").textContent = "0 zile";
+        container.querySelector(".progress").style.strokeDashoffset = fullCircle;
         return;
       }
-
       const weeks = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
       const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      const milliseconds = diff % 1000;
 
-      elements.weeks.textContent = weeks + " săptămâni";
-      elements.days.textContent = days + " zile";
-      elements.hours.textContent = hours + " ore";
-      elements.minutes.textContent = minutes + " minute";
-      elements.seconds.textContent = seconds + " secunde";
-      elements.milliseconds.textContent = milliseconds + " ms";
-    }
-function startCountdown() {
-      updateCountdown(winterDate, {
-        weeks: document.querySelector("#winter .weeks"),
-        days: document.querySelector("#winter .days"),
-        hours: document.querySelector("#winter .hours"),
-        minutes: document.querySelector("#winter .minutes"),
-        seconds: document.querySelector("#winter .seconds"),
-        milliseconds: document.querySelector("#winter .milliseconds")
-      });
+      // text
+      container.querySelector(".label").textContent = weeks + " săpt.";
+      container.querySelector(".days").textContent = days + " zile";
 
-      updateCountdown(springDate, {
-        weeks: document.querySelector("#spring .weeks"),
-        days: document.querySelector("#spring .days"),
-        hours: document.querySelector("#spring .hours"),
-        minutes: document.querySelector("#spring .minutes"),
-        seconds: document.querySelector("#spring .seconds"),
-        milliseconds: document.querySelector("#spring .milliseconds")
-      });
-
-      updateCountdown(summerDate, {
-        weeks: document.querySelector("#summer .weeks"),
-        days: document.querySelector("#summer .days"),
-        hours: document.querySelector("#summer .hours"),
-        minutes: document.querySelector("#summer .minutes"),
-        seconds: document.querySelector("#summer .seconds"),
-        milliseconds: document.querySelector("#summer .milliseconds")
-      });
-
-      updateCountdown(autumnDate, {
-        weeks: document.querySelector("#autumn .weeks"),
-        days: document.querySelector("#autumn .days"),
-        hours: document.querySelector("#autumn .hours"),
-        minutes: document.querySelector("#autumn .minutes"),
-        seconds: document.querySelector("#autumn .seconds"),
-        milliseconds: document.querySelector("#autumn .milliseconds")
-      });
+      // progresul cercului
+      const totalWeeks = Math.floor((targetDate - new Date(targetDate).setMonth(new Date(targetDate).getMonth() - 3)) / (1000*60*60*24*7)); 
+      const progress = fullCircle - (weeks / totalWeeks) * fullCircle;
+      container.querySelector(".progress").style.strokeDashoffset = progress;
     }
 
-    setInterval(startCountdown, 50);
+    function startCountdown() {
+      updateCountdown(winterDate, document.getElementById("winter"));
+      updateCountdown(springDate, document.getElementById("spring"));
+      updateCountdown(summerDate, document.getElementById("summer"));
+      updateCountdown(autumnDate, document.getElementById("autumn"));
+    }
+
+    setInterval(startCountdown, 1000);
   </script>
 </body>
 </html>
