@@ -2,152 +2,183 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Countdown Anotimpuri</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      background: linear-gradient(to right, #fdfbfb, #ebedee);
+      background: linear-gradient(135deg, #dff6ff, #fceabb);
       margin: 0;
       padding: 20px;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 30px;
       color: #333;
     }
-    h1 {
-      margin-bottom: 20px;
-    }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      justify-items: center;
-    }
-    .card {
-      background: white;
-      padding: 15px;
-      border-radius: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      width: 200px;
-    }
-    .title {
-      font-size: 1.1rem;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-    svg {
-      width: 120px;
-      height: 120px;
-    }
-    .circle-bg {
-      fill: none;
-      stroke: #eee;
-      stroke-width: 10;
-    }
-    .circle {
-      fill: none;
-      stroke: orange;
-      stroke-width: 10;
-      stroke-linecap: round;
-      transform: rotate(-90deg);
-      transform-origin: 50% 50%;
-    }
-    .circle-container {
-      position: relative;
-      display: inline-block;
-    }
-    .value {
-      font-size: 1.4rem;
-      font-weight: bold;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .time {
+
+    .seasons {
       display: flex;
-      justify-content: space-around;
       flex-wrap: wrap;
-      margin-top: 10px;
+      justify-content: center;
+      gap: 20px;
     }
-    .unit {
-      text-align: center;
-      min-width: 50px;
+
+    .season {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      width: 240px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
-    .unit .value {
-      font-size: 1rem;
-      position: static;
-      transform: none;
+
+    .title {
+      font-weight: bold;
+      font-size: 22px;
+      margin-bottom: 15px;
     }
-    .label {
-      font-size: 0.7rem;
-      color: #666;
+
+    .time span {
+      display: block;
+      font-size: 22px;   /* toate mai mari */
+      font-weight: bold;
+      margin: 6px 0;
+    }
+
+    .weeks {
+      font-size: 28px;   /* săptămânile și mai mari */
+      color: #0077ff;
     }
   </style>
 </head>
 <body>
   <h1>Numărătoare până la anotimpuri</h1>
-  <div class="container" id="lista"></div>
+
+  <div class="seasons">
+    <div class="season" id="winter">
+      <div class="title">❄️ Iarna</div>
+      <div class="time">
+        <span class="weeks"></span>
+        <span class="days"></span>
+        <span class="hours"></span>
+        <span class="minutes"></span>
+        <span class="seconds"></span>
+        <span class="milliseconds"></span>
+      </div>
+    </div>
+
+    <div class="season" id="spring">
+      <div class="title">🌱 Primăvara</div>
+      <div class="time">
+        <span class="weeks"></span>
+        <span class="days"></span>
+        <span class="hours"></span>
+        <span class="minutes"></span>
+        <span class="seconds"></span>
+        <span class="milliseconds"></span>
+      </div>
+    </div>
+
+    <div class="season" id="summer">
+      <div class="title">☀️ Vara</div>
+      <div class="time">
+        <span class="weeks"></span>
+        <span class="days"></span>
+        <span class="hours"></span>
+        <span class="minutes"></span>
+        <span class="seconds"></span>
+        <span class="milliseconds"></span>
+      </div>
+    </div>
+
+    <div class="season" id="autumn">
+      <div class="title">🍂 Toamna</div>
+      <div class="time">
+        <span class="weeks"></span>
+        <span class="days"></span>
+        <span class="hours"></span>
+        <span class="minutes"></span>
+        <span class="seconds"></span>
+        <span class="milliseconds"></span>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // Date pentru următoarele anotimpuri
-    const anotimpuri = [
-      { nume: "❄️ Anul nou", data: new Date(" Decembre 31 , 2025 00:00:00") },
-      { nume: "🌱 Primăvara", data: new Date("March 1, 2026 00:00:00") },
-      { nume: "☀️ Vara", data: new Date("June 1, 2026 00:00:00") },
-      { nume: "🍂 Toamna", data: new Date("September 1, 2026 00:00:00") }
-    ];
+    const winterDate = new Date("Dec 1, 2025 00:00:00").getTime();
+    const springDate = new Date("Mar 1, 2026 00:00:00").getTime();
+    const summerDate = new Date("Jun 1, 2026 00:00:00").getTime();
+    const autumnDate = new Date("Sep 1, 2026 00:00:00").getTime();
 
-    const container = document.getElementById("lista");
-
-    function updateCountdown() {
+    function updateCountdown(targetDate, elements) {
       const now = new Date().getTime();
-      container.innerHTML = "";
+      const diff = targetDate - now;
 
-      anotimpuri
-        .sort((a, b) => a.data - now - (b.data - now))
-        .forEach((a) => {
-          const diff = a.data.getTime() - now;
+      if (diff <= 0) {
+        elements.weeks.textContent = "0 săptămâni";
+        elements.days.textContent = "0 zile";
+        elements.hours.textContent = "0 ore";
+        elements.minutes.textContent = "0 minute";
+        elements.seconds.textContent = "0 secunde";
+        elements.milliseconds.textContent = "0 ms";
+        return;
+      }
 
-          const zile = Math.floor(diff / (1000 * 60 * 60 * 24));
-          const ore = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minute = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-          const secunde = Math.floor((diff % (1000 * 60)) / 1000);
-          const ms = diff % 1000;
+      const weeks = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+      const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      const milliseconds = diff % 1000;
 
-          const progress = 1 - (diff / (1000 * 60 * 60 * 24 * 365));
-          const radius = 50;
-          const circumference = 2 * Math.PI * radius;
-          const offset = circumference - progress * circumference;
+      elements.weeks.textContent = weeks + " săptămâni";
+      elements.days.textContent = days + " zile";
+      elements.hours.textContent = hours + " ore";
+      elements.minutes.textContent = minutes + " minute";
+      elements.seconds.textContent = seconds + " secunde";
+      elements.milliseconds.textContent = milliseconds + " ms";
+    }
+function startCountdown() {
+      updateCountdown(winterDate, {
+        weeks: document.querySelector("#winter .weeks"),
+        days: document.querySelector("#winter .days"),
+        hours: document.querySelector("#winter .hours"),
+        minutes: document.querySelector("#winter .minutes"),
+        seconds: document.querySelector("#winter .seconds"),
+        milliseconds: document.querySelector("#winter .milliseconds")
+      });
 
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <div class="title">${a.nume}</div>
-            <div class="circle-container">
-              <svg>
-                <circle class="circle-bg" cx="60" cy="60" r="${radius}"></circle>
-                <circle class="circle" cx="60" cy="60" r="${radius}"
-                  stroke-dasharray="${circumference}" stroke-dashoffset="${offset}">
-                </circle>
-              </svg>
-              <div class="value">${zile}</div>
-            </div>
-            <div class="time">
-              <div class="unit"><div class="value">${zile}</div><div class="label">zile</div></div>
-              <div class="unit"><div class="value">${ore}</div><div class="label">ore</div></div>
-              <div class="unit"><div class="value">${minute}</div><div class="label">minute</div></div>
-              <div class="unit"><div class="value">${secunde}</div><div class="label">secunde</div></div>
-              <div class="unit"><div class="value">${ms}</div><div class="label">ms</div></div>
-            </div>
-          `;
-          container.appendChild(card);
-        });
+      updateCountdown(springDate, {
+        weeks: document.querySelector("#spring .weeks"),
+        days: document.querySelector("#spring .days"),
+        hours: document.querySelector("#spring .hours"),
+        minutes: document.querySelector("#spring .minutes"),
+        seconds: document.querySelector("#spring .seconds"),
+        milliseconds: document.querySelector("#spring .milliseconds")
+      });
+
+      updateCountdown(summerDate, {
+        weeks: document.querySelector("#summer .weeks"),
+        days: document.querySelector("#summer .days"),
+        hours: document.querySelector("#summer .hours"),
+        minutes: document.querySelector("#summer .minutes"),
+        seconds: document.querySelector("#summer .seconds"),
+        milliseconds: document.querySelector("#summer .milliseconds")
+      });
+
+      updateCountdown(autumnDate, {
+        weeks: document.querySelector("#autumn .weeks"),
+        days: document.querySelector("#autumn .days"),
+        hours: document.querySelector("#autumn .hours"),
+        minutes: document.querySelector("#autumn .minutes"),
+        seconds: document.querySelector("#autumn .seconds"),
+        milliseconds: document.querySelector("#autumn .milliseconds")
+      });
     }
 
-    setInterval(updateCountdown, 50);
+    setInterval(startCountdown, 50);
   </script>
 </body>
-  <html>
-
-
-
-
+</html>
